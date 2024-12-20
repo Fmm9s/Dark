@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Market</title>
+    <style>
+        body {
+            background-color: #1a1a1a; /* لون داكن */
+            color: #fff; /* نص أبيض */
+            font-family: Arial, sans-serif;
+            text-align: center; /* محاذاة النص في المنتصف */
+            margin: 0; /* إزالة الهوامش الافتراضية */
+            padding: 20px; /* إضافة حشوة */
+        }
+        h1 {
+            margin-bottom: 20px; /* مسافة أسفل العنوان */
+        }
+        .welcome {
+            margin-bottom: 20px; /* مسافة أسفل الرسالة الترحيبية */
+            font-size: 1.5em; /* حجم خط أكبر */
+        }
+        .products {
+            display: none; /* إخفاء المنتجات في البداية */
+            flex-direction: column; /* عرض المنتجات بشكل عمودي */
+            align-items: center; /* محاذاة العناصر في المنتصف */
+        }
+        .product {
+            border: 1px solid #444; /* حدود داكنة */
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            width: 90%; /* عرض ثابت للمنتجات */
+            max-width: 300px; /* أقصى عرض للمنتجات */
+            background-color: #2a2a2a; /* خلفية داكنة للمنتجات */
+        }
+        .cart, .orders {
+            margin-top: 20px;
+            display: none; /* إخفاء السلة والطلبات في البداية */
+            background-color: #2a2a2a; /* خلفية داكنة */
+            padding: 20px; /* إضافة حشوة */
+            border-radius: 5px; /* زوايا دائرية */
+        }
+        .button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #333; /* لون زر داكن */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s; /* تأثير تغيير لون الزر */
+            width: 100%; /* عرض الزر بالكامل */
+            max-width: 200px; /* أقصى عرض للزر */
+        }
+        .button:hover {
+            background-color: #555; /* تغيير لون الزر عند التمرير */
+        }
+        input {
+            margin: 5px;
+            padding: 10px;
+            width: calc(100% - 22px); /* عرض المدخلات */
+            border-radius: 5px; /* زوايا دائرية */
+            border: 1px solid #444; /* حدود داكنة */
+        }
+    </style>
+</head>
+<body>
+    <h1>Dark Market</h1>
+    <div class="welcome">
+        <h2>مرحباً بك، أنا جون ويك! اختر ما تريده</h2>
+    </div>
+    <div>
+        <button class="button" onclick="showProductList()">عرض المنتجات</button>
+        <button class="button" onclick="showCart()">عرض السلة</button>
+        <button class="button" onclick="showOrdersPage()">عرض الطلبات</button>
+    </div>
+
+    <div class="products">
+        <h2>اختر منتجك</h2>
+        <div class="product">
+            <h3>سلاح M4</h3>
+            <p>سعر: بل غواصه 1</p>
+            <button class="button" onclick="addToCart('سلاح M4', 'بل غواصه 1')">إضافة للسلة</button>
+        </div>
+        <div class="product">
+            <h3>هليكوبتر</h3>
+            <p>سعر: بل غواصه 1</p>
+            <button class="button" onclick="addToCart('هليكوبتر', 'بل غواصه 1')">إضافة للسلة</button>
+        </div>
+        <div class="product">
+            <h3>شاص رشاش</h3>
+            <p>سعر: بل غواصتين</p>
+            <button class="button" onclick="addToCart('شاص رشاش', 'بل غواصتين')">إضافة للسلة</button>
+        </div>
+        <div class="product">
+            <h3>مدرعه</h3>
+            <p>سعر: بل غواصات 3</p>
+            <button class="button" onclick="addToCart('مدرعه', 'بل غواصات 3')">إضافة للسلة</button>
+        </div>
+    </div>
+
+    <div class="cart">
+        <h2>سلة المشتريات</h2>
+        <ul id="cartItems"></ul>
+        <input type="text" id="name" placeholder="أدخل اسمك" />
+        <input type="text" id="idNumber" placeholder="أدخل رقم هويتك" />
+        <button class="button" onclick="checkout()">إرسال الطلب</button>
+        <button class="button" onclick="hideCart()">إغلاق</button>
+    </div>
+
+    <div class="orders">
+        <h2>عرض الطلبات</h2>
+        <input type="password" id="password" placeholder="أدخل كلمة المرور" />
+        <button class="button" onclick="viewOrders()">عرض الطلبات</button>
+        <button class="button" onclick="hideOrders()">إغلاق</button>
+    </div>
+
+    <script>
+        let cart = [];
+        let orders = [];
+
+        function showProductList() {
+            document.querySelector('.products').style.display = 'flex';
+        }
+
+        function addToCart(product, price) {
+            cart.push({ product, price });
+            alert(`${product} تم إضافته إلى السلة.`);
+        }
+
+        function showCart() {
+            const cartDiv = document.querySelector('.cart');
+            cartDiv.style.display = 'block';
+            updateCartDisplay();
+        }
+
+        function hideCart() {
+            document.querySelector('.cart').style.display = 'none';
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.product} - سعر: ${item.price}`;
+                cartItems.appendChild(li);
+            });
+        }
+
+        function checkout() {
+            const name = document.getElementById('name').value;
+            const idNumber = document.getElementById('idNumber').value;
+            orders.push({ name, idNumber, items: [...cart] });
+            alert(`تم إرسال الطلب باسم: ${name} ورقم الهوية: ${idNumber}`);
+            cart = []; // تفريغ السلة بعد الإرسال
+            updateCartDisplay();
+            hideCart();
+        }
+
+        function showOrdersPage() {
+            document.querySelector('.orders').style.display = 'block';
+        }
+
+        function hideOrders() {
+            document.querySelector('.orders').style.display = 'none';
+        }
+
+        function viewOrders() {
+            const password = document.getElementById('password').value;
+            if (password === "Aa188033") {
+                let orderList = "الطلبات:\n";
+                orders.forEach(order => {
+                    orderList += `اسم: ${order.name}, رقم الهوية: ${order.idNumber}, المنتجات: ${order.items.map(item => item.product).join(', ')}\n`;
+                });
+                alert(orderList);
+            } else {
+                alert("كلمة المرور غير صحيحة.");
+            }
+        }
+    </script>
+</body>
+</html>
